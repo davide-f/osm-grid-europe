@@ -1,0 +1,83 @@
+# SPDX-FileCopyrightText: 2024 https://github.com/bobbyxng
+#
+# SPDX-License-Identifier: MIT
+
+##################
+# Initialisation #
+##################
+
+import sys
+sys.path.append("workflow/scripts")
+from common import create_symlinks
+
+create_symlinks("data", "workflow/submodules/pypsa-eur/data")
+
+include: "submodules/pypsa-eur/rules/common.smk"
+
+####################
+# Submodule import #
+####################
+
+# Define the configuration file
+configfile: "workflow/submodules/pypsa-eur/config/config.default.yaml"
+configfile: "config/config.yaml"
+
+
+sys.path.append("workflow/submodules/pypsa-eur/scripts")
+from _helpers import path_provider, get_rdir
+
+run = config["run"]
+RDIR = get_rdir(run)
+policy = run["shared_resources"]["policy"]
+exclude = run["shared_resources"]["exclude"]
+logs = path_provider("logs/", RDIR, policy, exclude)
+benchmarks = path_provider("benchmarks/", RDIR, policy, exclude)
+resources = path_provider("resources/", RDIR, policy, exclude)
+
+RESULTS = "results/" + RDIR
+
+
+wildcard_constraints:
+    simpl="[a-zA-Z0-9]*",
+    clusters="[0-9]+(m|c)?|all",
+    ll=r"(v|c)([0-9\.]+|opt)",
+    opts=r"[-+a-zA-Z0-9\.]*",
+    sector_opts=r"[-+a-zA-Z0-9\.\s]*",
+    planning_horizons="[0-9]*",
+    year="[0-9]*",
+
+
+
+# Include the Snakemake workflow from the submodule
+module pypsaeur:
+    snakefile:
+        "submodules/pypsa-eur/Snakefile"
+    config:
+        config
+
+# Use all rules from the pypsaeur submodule
+use rule * from pypsaeur
+
+
+####################
+# Additional rules #
+####################
+
+rule push:
+    params:
+        cluster=f"{config['remote']['ssh']}:{config['remote']['path']}",
+    shell:
+        """
+        rsync -uvarh --ignore-missing-args --files-from=.sync-send . {params.cluster}
+        """
+
+
+rule pull:
+    params:
+        cluster=f"{config['remote']['ssh']}:{config['remote']['path']}",
+    shell:
+        """
+        rsync -uvarh --no-g {params.cluster}/resources . || echo "No resources directory, skipping rsync"
+        rsync -uvarh --no-g {params.cluster}/results . || echo "No results directory, skipping rsync"
+        rsync -uvarh --no-g {params.cluster}/logs . || echo "No logs directory, skipping rsync"
+        """

@@ -1,0 +1,4 @@
+[submodule "workflow/submodules/pypsa-eur"]
+	path = workflow/submodules/pypsa-eur
+	url = https://github.com/pypsa/pypsa-eur.git
+	branch = osm-grid-europe
