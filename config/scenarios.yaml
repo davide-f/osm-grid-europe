@@ -1,0 +1,11 @@
+entsoegridkit:
+  electricity:
+    voltages: [220., 300., 330., 380., 400., 500., 750.]
+    base_network: entsoegridkit
+
+osm-prebuilt-0.6:
+  electricity:
+    voltages: [220., 300., 330., 380., 400., 500., 750.]
+    base_network: osm-prebuilt
+    osm-prebuilt-version: 0.6
+
