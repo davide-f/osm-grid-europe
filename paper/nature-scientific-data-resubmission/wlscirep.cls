@@ -23,7 +23,8 @@
 \RequirePackage{ifpdf}
 
 \RequirePackage{amsmath,amsfonts,amssymb}
-\RequirePackage{graphicx,xcolor}
+\RequirePackage{graphicx}
+\RequirePackage[table]{xcolor}
 \RequirePackage{booktabs}
 
 % Settings for the author block

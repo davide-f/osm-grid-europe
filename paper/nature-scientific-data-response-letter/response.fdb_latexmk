@@ -1,18 +1,19 @@
 # Fdb version 4
-["bibtex response"] 1731580205.05948 "response.aux" "response.bbl" "response" 1731582287.87111 0
-  "./references.bib" 1731578371.68375 175 e75f9b7f3c0a3adad9d6bd7e6173e7fb ""
+["bibtex response"] 0 "response.aux" "response.bbl" "response" 1731685859.33507 -1
+  "./references.bib" 1731683313.60942 79734 ed78f3ccbe3a4f9cd3b94ee52be83538 ""
   "/usr/share/texlive/texmf-dist/bibtex/bst/elsarticle/elsarticle-num.bst" 1606256092 29462 43db4fe246825ec69ed81b2463c17f04 ""
-  "response.aux" 1731582287.56769 284 0dbdceff698cb65ac9e22b0588fe31b8 "pdflatex"
+  "response.aux" 1731685859.03881 2108 bfb5424461eef3b00999a02162e83578 "pdflatex"
   (generated)
   "response.bbl"
   "response.blg"
   (rewritten before read)
-["pdflatex"] 1731582286.87424 "/home/bobby/projects/osm-grid-europe/paper/nature-scientific-data-response-letter/response.tex" "response.pdf" "response" 1731582287.87131 0
+["pdflatex"] 1731685858.15008 "/home/bobby/projects/osm-grid-europe/paper/nature-scientific-data-response-letter/response.tex" "response.pdf" "response" 1731685859.33528 0
   "/etc/texmf/web2c/texmf.cnf" 1718836894.47968 475 c0e671620eb5563b2130f56340a5fde8 ""
-  "/home/bobby/projects/osm-grid-europe/paper/nature-scientific-data-response-letter/response.tex" 1731582286.60567 9045 333edfbe280f8c0a57da530a6f2be40e ""
+  "/home/bobby/projects/osm-grid-europe/paper/nature-scientific-data-response-letter/response.tex" 1731685857.8398 25550 f3e72a739d3778481ed12410d793fcaf ""
   "/usr/share/texlive/texmf-dist/fonts/enc/dvips/libertine/lbtn_25tcsq.enc" 1490131464 2921 8ca0eb0831f9bc5da080d3697cfe67bf ""
   "/usr/share/texlive/texmf-dist/fonts/enc/dvips/libertine/lbtn_76gpa5.enc" 1490131464 2933 9ad527ce78d7c5fa0a642dead095f172 ""
   "/usr/share/texlive/texmf-dist/fonts/enc/dvips/libertine/lbtn_7grukw.enc" 1490131464 2934 a4a9158faed2e9e89c771b4e3b7fc12f ""
+  "/usr/share/texlive/texmf-dist/fonts/enc/dvips/libertine/lbtn_naooyc.enc" 1490131464 3357 5261ce65ba03aef9faf6135657b9abb6 ""
   "/usr/share/texlive/texmf-dist/fonts/enc/dvips/libertine/lbtn_nh77jq.enc" 1490131464 2933 8d808fcabf70c6c809bb14c283ece4da ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/jknappen/ec/ecrm1095.tfm" 1136768653 3584 929cdff2b7a8c11bd4d49fd68cb0ae70 ""
@@ -27,6 +28,8 @@
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/libertine/LinBiolinumTB-tlf-t1.tfm" 1490131464 19416 aedd2db224ad278ddf2c411f52d86014 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/libertine/LinLibertineT-tlf-t1--base.tfm" 1490131464 1740 2943dd2ba1dcd3849599663c1d2693ef ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/libertine/LinLibertineT-tlf-t1.tfm" 1490131464 19504 bdf9fb416f5a91bf56b1ccda887f5b91 ""
+  "/usr/share/texlive/texmf-dist/fonts/tfm/public/libertine/LinLibertineT-tlf-ts1--base.tfm" 1490131464 1488 9b803beb26c181b228c4fde93d4398a3 ""
+  "/usr/share/texlive/texmf-dist/fonts/tfm/public/libertine/LinLibertineT-tlf-ts1.tfm" 1490131464 1516 5e35377e77f0326136c4078d4c186a36 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/libertine/LinLibertineTB-tlf-t1--base.tfm" 1490131464 1724 248b3a23a2f748bd3089e9d3118d991e ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/libertine/LinLibertineTB-tlf-t1.tfm" 1490131464 19488 f569478ca339d9b5ad93b46bf7a470e2 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/libertine/LinLibertineTI-tlf-t1--base.tfm" 1490131464 1932 54655639067fe21ae3b23b77173351a5 ""
@@ -46,6 +49,7 @@
   "/usr/share/texlive/texmf-dist/fonts/vf/public/libertine/LinBiolinumT-tlf-t1.vf" 1490131464 1728 e76e04a950024a95b620698b679c9810 ""
   "/usr/share/texlive/texmf-dist/fonts/vf/public/libertine/LinBiolinumTB-tlf-t1.vf" 1354061736 1728 4ae633ddccb76ba8d0a0906a5e2e8fdf ""
   "/usr/share/texlive/texmf-dist/fonts/vf/public/libertine/LinLibertineT-tlf-t1.vf" 1354061736 1728 b078a050f24d7649619baa987d7216d8 ""
+  "/usr/share/texlive/texmf-dist/fonts/vf/public/libertine/LinLibertineT-tlf-ts1.vf" 1490131464 640 f2633b196ddbd644937d19e300a5024e ""
   "/usr/share/texlive/texmf-dist/fonts/vf/public/libertine/LinLibertineTB-tlf-t1.vf" 1490131464 1768 5d66dfd9709f1f38b8fb3cb38db46402 ""
   "/usr/share/texlive/texmf-dist/fonts/vf/public/libertine/LinLibertineTI-tlf-t1.vf" 1490131464 1768 b3bfd8ed1fe2dce5fd19610abe4c3dbe ""
   "/usr/share/texlive/texmf-dist/tex/context/base/mkii/supp-pdf.mkii" 1461363279 71627 94eb9990bed73c364d7f53f960cc8c5b ""
@@ -124,6 +128,7 @@
   "/usr/share/texlive/texmf-dist/tex/latex/libertine/LinLibertine_I.tex" 1355443847 24957 22a8dc56372173d7ffa65753dfc6757e ""
   "/usr/share/texlive/texmf-dist/tex/latex/libertine/T1LinuxBiolinumT-TLF.fd" 1490131464 2264 2324ece7d4d2a7fa3c2138d120196405 ""
   "/usr/share/texlive/texmf-dist/tex/latex/libertine/T1LinuxLibertineT-TLF.fd" 1490131464 2980 15412b63bb0119ade194e089fff355d4 ""
+  "/usr/share/texlive/texmf-dist/tex/latex/libertine/TS1LinuxLibertineT-TLF.fd" 1490131464 1689 42435c12d9d3dc0c446eb02409690ab9 ""
   "/usr/share/texlive/texmf-dist/tex/latex/libertine/libertine.sty" 1701117611 19358 4cea37e76ca398a7cf02bd21af338930 ""
   "/usr/share/texlive/texmf-dist/tex/latex/libertinust1math/libertinust1math.sty" 1705352490 81516 afc06d0a9277055b3f46492d370dcc4b ""
   "/usr/share/texlive/texmf-dist/tex/latex/libertinust1math/ls1libertinust1math.fd" 1537563990 1736 a88dc46de39d1762bf28fbdcb81e1eba ""
@@ -152,11 +157,12 @@
   "/usr/share/texmf/web2c/texmf.cnf" 1707919699 40399 f2c302f7d2af602abb742093540a5834 ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1718836900.63502 5472669 54eaf61a88b6b7896ebd0dac973cb29c ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1718836914 8214345 b40ffbf29eadf67a985da70aeed9a6bc ""
-  "response.aux" 1731582287.56769 284 0dbdceff698cb65ac9e22b0588fe31b8 "pdflatex"
-  "response.bbl" 1731580205.18562 325 d297f76ff9710e3e93f793558e030318 "bibtex response"
+  "figures/fig_example_clustering.png" 1731667447.71957 280350 57f30a67a94bb5375e1a4a5f0d0e4207 ""
+  "response.aux" 1731685859.03881 2108 bfb5424461eef3b00999a02162e83578 "pdflatex"
+  "response.bbl" 1731684651.30163 3094 ec7045e33f9cab388e633aab11c23fa9 "bibtex response"
   "response.cls" 1731579239.02935 3757 a15e46ccc9678960142a9a44cb6b13f2 ""
-  "response.out" 1731582287.43669 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
-  "response.tex" 1731582286.60567 9045 333edfbe280f8c0a57da530a6f2be40e ""
+  "response.out" 1731685858.79481 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
+  "response.tex" 1731685857.8398 25550 f3e72a739d3778481ed12410d793fcaf ""
   (generated)
   "response.aux"
   "response.log"

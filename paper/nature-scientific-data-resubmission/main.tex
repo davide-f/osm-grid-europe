@@ -6,9 +6,7 @@
 \usepackage{listings}
 \usepackage{tikz}
 \usetikzlibrary{positioning, arrows.meta}
-\usepackage{graphicx}
 \usepackage{ulem}  % for striking through text
-\usepackage[table]{xcolor}
 \usepackage{glossaries}
 \usepackage{csvsimple}
 \usepackage{bm} % Bold math
@@ -19,9 +17,17 @@
 \usepackage{makecell} % for line breaks in table cells
 \usepackage{pdflscape}
 \usepackage{array}
+\usepackage{hyperref}
 \glsdisablehyper % Disable hyperlinks for glossary entries
 \let\autocite\cite
-\linenumbers
+% \linenumbers
+
+% Redefine DOI command
+\makeatletter
+\def\doi#1{%
+  \href{https://doi.org/#1}{\textnormal{#1}}%
+}
+\makeatother
 
 %%% Acronyms
 
@@ -33,6 +39,8 @@
 \newacronym{dc}{DC}{Direct Current}
 \newacronym{rmse}{RMSE}{Root Mean Square Error}
 \newacronym{odbl}{ODbL}{Open Data Commons Open Database License}
+\newacronym{oemof}{oemof}{open energy modelling framework}
+\newacronym{poi}{PoI}{Pole of Inaccessibility}
 
 
 \newcommand{\fixedcolorbox}[2]{%
@@ -62,31 +70,27 @@
 
 
 \begin{abstract}
-% \pdfcomment{This is a manuscript template for Data Descriptor submissions to \emph{Scientific Data} (\href{http://www.nature.com/scientificdata}{http://www.nature.com/scientificdata}). The abstract must be no longer than 170 words, and should succinctly describe the study, the assay(s) performed, the resulting data, and the reuse potential, but should not make any claims regarding new scientific findings. No references are allowed in this section.}
-This paper provides the background, methodology and validation for constructing a representation of the European high-voltage grid, including and above 200 kV, based on public data provided by OpenStreetMap. The model-independent grid dataset is published under the Open Data Commons Open Database (ODbL 1.0) licence and can be used for large-scale electricity as well as energy system modelling. The dataset and workflow are provided as part of PyPSA-Eur -- an open-source, sector-coupled optimisation model of the European energy system. By integrating with the codebase for initiatives such as PyPSA-Earth, the value of open and maintainable high-voltage grid data extends to the global context. By accessing the latest data through the the Overpass turbo API, the dataset can be easily reconstructed and updated within minutes. To assess the data quality, this paper further compares the dataset with official statistics and representative model runs using PyPSA-Eur based on different electricity grid representations.
+This paper provides the background, methodology and validation for constructing a representation of the European high-voltage grid (AC 220 kV to 750 kV) based on public data provided by OpenStreetMap. Grid components include commissioned substations, AC and DC transmission lines and cables, transformers, and converters as well as their respective technical parameters based on standard types. The data is provided as easy-to-access comma-separated values files. Hence, the dataset is suitable for model-independent, large-scale electricity and energy system modelling. For further ease-of-use, an interactive map is included to allow for visually inspecting the highly geospatially resolved data and its parameters. To assess the data quality, this paper compares the dataset with official statistics and representative model runs using PyPSA-Eur based on different electricity grid representations. The dataset and workflow are provided as part of PyPSA-Eur, an open-source, sector-coupled optimisation model of the European energy system. By integrating with the codebase for initiatives such as PyPSA-Earth, the value of open and maintainable high-voltage grid data extends to the global context. The dataset is published under the Open Data Commons Open Database (ODbL 1.0) licence.
 \end{abstract}
 \begin{document}
 
 \flushbottom
 \maketitle
-%  Click the title above to edit the author information and abstract
 
 \thispagestyle{empty}
 
-% \pdfcomment{Please note: Abbreviations should be introduced at the first mention in the main text – no abbreviations lists or tables should be included. Structure of the main text is provided below.}
 \section*{Background \& Summary}
-% \pdfcomment{(700 words maximum) An overview of the study design, the assay(s) performed, and the created data, including any background information needed to put this study in the context of previous work and the literature. The section should also briefly outline the broader goals that motivated the creation of this dataset and the potential reuse value. We also encourage authors to include a figure that provides a schematic overview of the study and assay(s) design. The Background \& Summary should not include subheadings. This section and the other main body sections of the manuscript should include citations to the literature as needed.}
+\pdfbookmark[1]{Background \& Summary}{background-and-summary}
 Energy system models are indispensable tools in today's world in order to understand the complex interactions between energy sources, technologies, policies, and markets. They are used by researchers, industry and policy makers to enable informed decision-making in the transition to a net-zero energy system. However, conclusions drawn from such models are only as good as the underlying data and assumptions. Especially the representation of existing energy infrastructure, such as the electricity grid, can have a deciding impact on future investments derived from such models.\autocite{horschRoleSpatialScale2017} While \glspl{tso} have their own information on the high-voltage grid, this data is often not publicly available to the level of detail needed for academic research purposes. Official institutions like the \gls{entsoe} provide an online map \autocite{entso-eENTSOETransmissionSystem} of the European high-voltage grid. There are however, several limitations typical for these sources: i) there is no underlying, topologically connected dataset, ii) it is not released under an open licence, iii) nor updated frequently, and iv) its geographic detail is limited or highly stylised.
 
-There are previous projects that have modelled the European high-voltage grid or its parts based on \gls{osm} data. Some institutions provide data for particular regions, however all of them come with their individual limitations: While the most trustworthy data comes from \acrshortpl{tso} themselves, they are --- with few regional exceptions \autocite{50hertzStaticGridModel2022} --- not georeferenced \autocite{jaoStaticGridModel2023} or do not cover the entirety of Europe. Datasets from previous academic projects \autocite{egererElectricitySectorData2014,hutcheonUpdatedValidatedPower2013,medjroubiOpenDataPower2017} are either very complex to reproduce or have not been updated for close to a decade. An overview of notable projects and datasets is listed in Table \ref{tab:network_projects}. Proven to be a reliable public data source, we make use of \acrshort{osm} to introduce a transparent workflow in order to create a representation of the European high-voltage grid. On the lack of updates of existing datasets, there are two main advantages of our work compared to previous initiatives. First, our approach uses the \acrshort{osm} Overpass turbo \gls{api}\autocite{raiferOverpassTurbo2024} that always allows to retrieve the latest \acrshort{osm} data. Second, an active \acrshort{osm} community as well as a large user base of PyPSA-Eur and integration into automated workflows mean frequent updates and validation of processed data. Debugging can be easily done with the help of the open source project OpenInfraMap \autocite{garrettOpenInfrastructureMap2024} which renders the \gls{osm} energy infrastructure on an interactive map. Finally, the entire workflow is developed in Python and may hence be more accessible than other implementations which require external dependencies (e.g. SQL databases, commercial software, Java).\autocite{wiegmansGridKitExtractENTSOE2016}
+There are previous projects that have modelled the European high-voltage grid or its parts based on \gls{osm} data. Some institutions provide data for particular regions, however all of them come with their individual limitations: While the most trustworthy data comes from \acrshortpl{tso} themselves, they are --- with few regional exceptions \autocite{50hertzStaticGridModel2022} --- not georeferenced \autocite{jaoStaticGridModel2023} or do not cover the entirety of Europe. Datasets from previous academic projects \autocite{egererElectricitySectorData2014,hutcheonUpdatedValidatedPower2013,medjroubiOpenDataPower2017} are either very complex to reproduce or have not been updated for close to a decade. An overview of notable projects and datasets is listed in Table \ref{tab:network_projects}. Proven to be a reliable public data source, we make use of \acrshort{osm} to introduce a transparent workflow in order to create a representation of the European high-voltage grid. On the lack of updates of existing datasets, there are two main advantages of our work compared to previous initiatives. First, our approach uses the \acrshort{osm} Overpass turbo \gls{api}\autocite{raiferOverpassTurbo2024} that always allows to retrieve the latest \acrshort{osm} data. Second, an active \acrshort{osm} community as well as a large user base of PyPSA-Eur and integration into automated workflows mean frequent updates and validation of processed data. Debugging can be easily done with the help of the open source project OpenInfraMap \autocite{garrettOpenInfrastructureMap2024} and the interactive map included in our dataset. Both tools render the electricity infrastructure in a JavaScript-based map which can be accessed with any modern browser. Finally, the entire workflow is developed in Python and may hence be more accessible than other implementations which require external dependencies (e.g. SQL databases, commercial software, Java).\autocite{wiegmansGridKitExtractENTSOE2016}
 
 Compared to previous implementations in the global modal PyPSA-Earth,\autocite{parzenPyPSAEarthNewGlobal2023} we significantly improve the work in speed and data quality by taking advantage of the topological, electrical and geographical information available for Europe in \gls{osm}. Given the generic structure of the developed workflow, it can be easily applied to other regions and fed back to the global PyPSA-Earth project. However, the output will directly depend on the \acrshort{osm} data quality for a particular region (e.g. whether data on the substation's geometric footprint is available). To fill in missing data, we introduce cleaning process that yields a representation of the European high-voltage grid. 
 We benchmark the processed data against country-level statistics provided by ENTSO-E, concluding that \acrshort{osm} data coverage of the European high-voltage grid is high or even close to complete. These improvements will also contribute to the quality of transmission grids modelled on a global scale in PyPSA-Earth. 
 \section*{Methods}
-% \pdfcomment{The Methods should include detailed text describing any steps or procedures used in producing the data, including full descriptions of the experimental design, data acquisition assays, and any computational processing (e.g. normalization, image feature extraction). See the detailed section in our submission guidelines for advice on writing a transparent and reproducible methods section. Related methods should be grouped under corresponding subheadings where possible, and methods should be described in enough detail to allow other researchers to interpret and repeat, if required, the full study. Specific data outputs should be explicitly referenced via data citation (see Data Records and Citing Data, below).
-% Authors should cite previous descriptions of the methods under use, but ideally the method descriptions should be complete enough for others to understand and reproduce the methods and processing steps without referring to associated publications. There is no limit to the length of the Methods section. Subheadings should not be numbered.}
+\pdfbookmark[1]{Methods}{methods}
 PyPSA-Eur is a spatially and temporally highly resolved, open-source, sector-coupled linear optimisation model that covers the European continent.\autocite{horschPyPSAEurOpenOptimisation2018} The model is build on top of the open-source toolbox PyPSA \autocite{brownPyPSAPythonPower2018} and is suited for operational as well as expansion studies (transmission, generation, and storages). The model includes a stock of existing power plants (processed with the tool powerplanmatching\autocite{gotzensPerformingEnergyModelling2019}) as well as renewable potentials and availability time series (processed with atlite\autocite{hofmannAtliteLightweightPython2021}).
-Throughout the last decade, PyPSA-Eur has gained a large user base from academia, industry, and policy makers alike and has been used in a variety of studies.\autocite{neumannPotentialRoleHydrogen2023,victoriaSpeedTechnologicalTransformations2022,brownUltralongdurationEnergyStorage2023,glaumOffshorePowerHydrogen2024,riepinMeansCostsSystemlevel2024,rahdanDistributedPhotovoltaicsProvides2024,grochowiczUsingPowerSystem2024,transnetbwStromnetz2050Studie2022} Other open-source models exist, one notable being OSeMOSYS Global,\autocite{barnesOSeMOSYSGlobalOpensource2022} however it lacks the detailed geographical as well as electrical representation of the transmission grid that PyPSA-Eur provides. With the integration into PyPSA-Eur, we also enable compatibility with additional functions already implemented into the model, such as, but not limited to, the option to enable dynamic line rating\autocite{glaumLeveragingExistingGerman2023} and adding projects under planning (e.g. European Ten-Year Network Development Plan\autocite{entso-eTenYearNetworkDevelopment2020} and the German Network Development Plan\autocite{bnetzaBestaetigungNetzentwicklungsplanStrom2024}).
+Throughout the last decade, PyPSA-Eur has gained a large user base from academia, industry, and policy makers alike and has been used in a variety of studies.\autocite{neumannPotentialRoleHydrogen2023,victoriaSpeedTechnologicalTransformations2022,brownUltralongdurationEnergyStorage2023,glaumOffshorePowerHydrogen2024,riepinMeansCostsSystemlevel2024,rahdanDistributedPhotovoltaicsProvides2024,grochowiczUsingPowerSystem2024,transnetbwStromnetz2050Studie2022} Other open-source models exist --- notable and widely-used ones include the \textit{\gls{oemof}}\autocite{hilpertOpenEnergyModelling2018} and \textit{OSeMOSYS Global}.\autocite{barnesOSeMOSYSGlobalOpensource2022} However both models lack the detailed geographical as well as electrical representation of the transmission grid that PyPSA-Eur provides. With the integration into PyPSA-Eur, we also enable compatibility with additional functions already implemented into the model, such as, but not limited to, the option to enable dynamic line rating\autocite{glaumLeveragingExistingGerman2023} and adding projects under planning (e.g. European Ten-Year Network Development Plan\autocite{entso-eTenYearNetworkDevelopment2020} and the German Network Development Plan\autocite{bnetzaBestaetigungNetzentwicklungsplanStrom2024}).
 
 \begin{figure}[h!]
     \centering
@@ -110,7 +114,7 @@ Throughout the last decade, PyPSA-Eur has gained a large user base from academia
     \label{fig:osm_process}
 \end{figure}
 
-PyPSA-Eur is managed by a workflow management system called Snakemake. \autocite{molderSustainableDataAnalysis2021} Its modular structure enables the addition of new model functionalities and data sources, these can then be toggled using a configuration file. We split the construction of the high-voltage grid into four steps and add them into the existing workflow. We also use the model for validation purposes (see section Technical Validation). While the dataset and its reconstruction is built into PyPSA-Eur, it has the potential to be used in other energy system models, too. To obtain a functioning, topologically connected representation of the European high-voltage grid based on \gls{osm} data, we take the following steps (see Figure \ref{fig:all_steps} for an application to an example region).
+PyPSA-Eur is managed by a workflow management system called Snakemake. \autocite{molderSustainableDataAnalysis2021} Its modular structure enables the addition of new model functionalities and data sources, these can then be toggled using a configuration file. We split the construction of the high-voltage grid into four steps and add them into the existing workflow. We also use the model for validation purposes (see section Technical Validation). While the dataset and its reconstruction is built into PyPSA-Eur, it has the potential to be used in other energy system models, too. For this purpose, we release the entire dataset, including their original and mapped technical parameters. To obtain a functioning, topologically connected representation of the European high-voltage grid based on \gls{osm} data, we take the following steps (see Figure \ref{fig:all_steps} for an application to an example region).
 
 \begin{figure}[!htbp]
     \centering
@@ -119,18 +123,23 @@ PyPSA-Eur is managed by a workflow management system called Snakemake. \autocite
     \label{fig:all_steps}
 \end{figure}
 
-\subsection*{Step 1 --- Retrieving the \gls{osm} data}
-In \gls{osm}, geographical data is stored in `nodes', `ways', and `relations'. Being the simplest data type, nodes are defined by coordinates and associated parameters. Ways are geometric line strings that connect a set of nodes. Relations can contain nodes, ways, a combination of either or other relations. \autocite{medjroubiOpenDataPower2017} For the purpose of this work, we extract ways for obtaining the outline of substations and \acrshort{ac} power lines and cables. To obtain \acrshort{dc} projects (usually cables, hereafter refered to as \acrshort{dc} links), we use relations. There are two main reasons for this differentiation: i) relations are the more complex data type, coverage for \acrshort{ac} lines and cables is still scarce for Europe, whereas for \acrshort{dc} links, given that there are much fewer of them in Europe, coverage is close to complete (see Table \ref{tab:dc_links}); ii) Some \acrshort{dc} links contain multiple components, accessing relations allows us to efficiently aggregate and simplify the links for the purpose of static energy system modelling.
-First, we retrieve the raw data using the Overpass turbo \gls{api}\autocite{raiferOverpassTurbo2024} (Figure \ref{fig:all_steps}.a). Specifically, we query the \gls{osm} database for electricity grid related features (see Table \ref{tab:overpass_queries}). Note that Overpass turbo has a limit on the size and number of requests for each query and provides the \gls{api} under a fair use policy. To avoid unnecessary load and re-use of data, we provide a prepared transmission grid for for download via Zenodo. \autocite{xiongPrebuiltElectricityNetwork2024}
+\subsection*{Step 1 --- Retrieving the OSM data}
+\pdfbookmark[2]{Step 1 - Retrieving the OSM data}{methods-step1}
+In \gls{osm}, geographical data is stored in `nodes', `ways', and `relations'. Being the simplest data type, nodes are defined by coordinates and associated parameters. Ways are geometric line strings that connect a set of nodes. Relations can contain nodes, ways, a combination of either or other relations. \autocite{medjroubiOpenDataPower2017} For the purpose of this work, we extract ways for obtaining the outline of substations. For \acrshort{ac} lines we use both ways and relations data to build the dataset. To harness the highest data quality available, we use relational data \acrshort{ac} lines whenever available. To avoid for duplicates in the representation of an \acrshort{ac} line, all members (ways) of a relation are removed from the dataset, respectively. This hybrid approach allows us to make use of relations, if they are complete and exist, and fall back to ways if relations are incomplete or missing.
 
-\subsection*{Step 2 --- Cleaning the \gls{osm} data}
-While \gls{osm} provides a rich dataset, it is not directly usable for energy system modelling. Next to geospatial coordinates, \gls{osm} includes tags that provide feature-specific additional information. Depending on the individual feature, data may however contain noise, be incomplete, or inconsistent. After importing the retrieved raw data into a pandas dataframe,\autocite{mckinneyDataStructuresStatistical2010} we apply a series of steps including heuristics to clean and fill in the missing information (see example in Table \ref{tab:aclines_example1}). We then use the power of geopandas\autocite{jordahlGeopandasGeopandasV02020} to perform geospatial operations (including but not limited to spatial joins, intersections, buffering, etc.).
+To obtain \acrshort{dc} projects (usually cables, hereafter refered to as \acrshort{dc} links), we use relations. There are two main reasons for this differentiation: i) relations are the more complex data type, coverage for \acrshort{ac} lines and cables is still scarce for Europe, whereas for \acrshort{dc} links, given that there are much fewer of them in Europe, we consider the coverage of commissioned \acrshort{dc} links complete (see Table \ref{tab:dc_links}); ii) Some \acrshort{dc} links contain multiple components, accessing relations allows us to efficiently aggregate and simplify the links for the purpose of static energy system modelling.
+
+First, we retrieve the raw data using the Overpass turbo \gls{api}\autocite{raiferOverpassTurbo2024} (Figure \ref{fig:all_steps}.a). Specifically, we query the \gls{osm} database for electricity grid related features (see Table \ref{tab:overpass_queries}). Note that Overpass turbo has a limit on the size and number of requests for each query and provides the \gls{api} under a fair use policy. To avoid unnecessary load and re-use of data, we provide a prepared transmission grid for for download via Zenodo (0.6 is tge latest version at the time of publication). \autocite{xiongPrebuiltElectricityNetwork2024}
+
+\subsection*{Step 2 --- Cleaning the OSM data}
+\pdfbookmark[2]{Step 2 - Cleaning the OSM data}{methods-step2}
+While \gls{osm} provides a rich dataset, it is not directly usable for energy system modelling. Next to geospatial coordinates, \gls{osm} includes tags that provide feature-specific additional information. Depending on the individual feature, data may however contain noise, be incomplete, or inconsistent. After importing the retrieved raw data into a pandas dataframe,\autocite{mckinneyDataStructuresStatistical2010} we apply a series of steps including heuristics to clean and fill in the missing information (see example in Table \ref{tab:aclines_example1}). We then use the power of geopandas\autocite{jordahlGeopandasGeopandasV0812020} to perform geospatial operations (including but not limited to spatial joins, intersections, buffering, etc.).
 
 \subsubsection*{Substations and transformers}
-To obtain the set of substations, we filter for substations with a voltage level within the scope of interest, i.e. between \acrshort{ac} \SI{200}{\kilo\volt} and \SI{750}{\kilo\volt}. Where available, we extract the polygon shape of the substations, stored in the element's geometry. This allows us to differentiate between internal and external grid components. 
-Note that information on transformers are not extracted from \acrshort{osm}, as i) we cannot adequately evaluate their coverage and ii) this data is not sufficient to create a topologically connected network. Instead, we use a needs-based approach, i.e. adding a single transformer of \SI{2000}{\mega\watt} between buses of different voltages within the perimeter of the same substation. This is in line with previous approaches to obtain the ENTSO-E map based transmission grid.\autocite{horschPyPSAEurOpenOptimisation2018}
+To obtain the set of substations, we filter for substations with a voltage level within the scope of interest, i.e. between \acrshort{ac} \SI{220}{\kilo\volt} and \SI{750}{\kilo\volt}. Where available, we extract the polygon shape of the substations, stored in the element's geometry. This allows us to differentiate between internal and external grid components. 
+Note that information on transformers are not extracted from \acrshort{osm}, as i) we cannot adequately evaluate their coverage and ii) this data is not sufficient to create a topologically connected network. Instead, we use a needs-based approach, i.e. adding a single transformer between buses of different voltages within the perimeter of the same substation. The nominal capacity of the transformer is determined by the maximum of the sum of connected \acrshort{ac} lines and cables on either side. This is in line with previous approaches to obtain the ENTSO-E map based transmission grid.\autocite{horschPyPSAEurOpenOptimisation2018}
 
-\subsubsection*{\acrshort{ac} lines and cables} In a first step, we clean the tag columns to only contain the correct data type and unit, as shown in Table \ref{tab:aclines_params} for \acrshort{ac} power lines and cables. The minimum parameters that need to be given for a particular line or cable are `voltage' (in \si{\volt}) and `power' (string: `line' or `cable').
+\subsubsection*{AC lines and cables} In a first step, we clean the tag columns to only contain the correct data type and unit, as shown in Table \ref{tab:aclines_params} for \acrshort{ac} power lines and cables. The minimum parameters that need to be given for a particular line or cable are `voltage' (in \si{\volt}) and `power' (string: `line' or `cable').
 % 
 \begin{table}[ht]
     \centering
@@ -163,7 +172,7 @@ We filter for the entries with a voltage level including and above \acrshort{ac}
     \hline
     way/1 &  & 2 & 50 & cable & \SI{380000}{} \\
     \hline
-    way/2 & 3 &  & 50 & cable & \SI{380000}{} \\
+    relation/1 & 3 &  & 50 & cable & \SI{380000}{} \\
     \hline
     way/3 & 9 & 1;2 & 50 & line & \SI{380000}{}; \SI{220000}{} \\
     \hline
@@ -186,7 +195,7 @@ We filter for the entries with a voltage level including and above \acrshort{ac}
     \hline
     way/1 & 2 & 50 & cable & \SI{380000}{} \\
     \hline
-    way/2 & \cellcolor{yellow!50}1 & 50 & cable & \SI{380000}{} \\
+    relation/1 & \cellcolor{yellow!50}1 & 50 & cable & \SI{380000}{} \\
     \hline
     way/3-1 & \cellcolor{yellow!50}1 & 50 & line & \cellcolor{yellow!50}\SI{380000}{} \\
     \hline
@@ -218,9 +227,10 @@ Due to their distinct electrical properties, we treat \acrshort{dc} links differ
     \label{fig:dc_example}
 \end{figure}
 
-Note some relations contain multiple \acrshort{dc} link segments or components (e.g. converter stations or grounding), these are simplified into a single line with the sum of their nominal ratings. Figure \ref{fig:dc_example} shows an example of how the Moyle interconnector from Northern Ireland to Scotland (Figure \ref{fig:dc_example}.a) is simplified (Figure \ref{fig:dc_example}.b). In this simplification, we preserve original end points of the \acrshort{dc} link and the longest connected path. In PyPSA, converters are modelled as links connecting two buses. In analogy to how transformers are introduced to the network ex-post. i.e. connecting the terminals of the \acrshort{dc} link, where the converter stations are also located on \acrshort{osm} and the closest \acrshort{ac} bus in the transmission grid. As such, we guarantee that \acrshort{dc} links are always topologically connected.
+Note that some relations contain multiple \acrshort{dc} link segments or components (e.g. converter stations or grounding), these are simplified into a single line with the sum of their nominal ratings. Figure \ref{fig:dc_example} shows an example of how the Moyle interconnector from Northern Ireland to Scotland (Figure \ref{fig:dc_example}.a) is simplified (Figure \ref{fig:dc_example}.b). In this simplification, we preserve original end points of the \acrshort{dc} link and the longest connected path. In PyPSA, converters are modelled as links connecting two buses. In analogy to how transformers are introduced to the network ex-post. i.e. connecting the terminals of the \acrshort{dc} link, where the converter stations are also located on \acrshort{osm} and the closest \acrshort{ac} bus in the transmission grid. As such, we guarantee that \acrshort{dc} links are always topologically connected.
 
-\subsection*{Step 3 --- Building the \gls{osm} network}
+\subsection*{Step 3 --- Building the OSM network}
+\pdfbookmark[2]{Step 3 - Building the OSM network}{methods-step3}
 \begin{figure}[!htbp]
     \centering
     \includegraphics[width=\linewidth]{figures/fig_build_osm_network.pdf}
@@ -230,23 +240,24 @@ Note some relations contain multiple \acrshort{dc} link segments or components (
 
 After having obtained a cleaned dataset, we need to ensure that the grid components are topologically and electrically connected. For this purpose, we propose a complete graph-based structure, i.e. buses/substations are connected by \acrshort{ac} and \acrshort{dc} lines, as well as converters and transformers. We introduce the following procedure, illustrated in Figure \ref{fig:build_osm_network}.
 
-First, we add the endpoints of both \acrshort{ac} and \acrshort{dc} lines to the set of buses (Figure \ref{fig:build_osm_network}.a). This step ensures that each line has two corresponding buses to which it is initially connected. Note that this may introduce potential duplicates of buses beyond those already present --- which we will take care of later. Next, we take of long lines that are overpassing (multiple) substations. Here we assume that in reality, the substation is electrically connected to the overpassing line. To achieve this, we split the original line into the subsegments between the intersecting nodes and add a suffix to its original identifier (Figure \ref{fig:build_osm_network}.b), to i) preserve the uniqueness of each line and ii) still allow for tracing back the line on \acrshort{osm} or OpenInfraMap.\autocite{garrettOpenInfrastructureMap2024} We update the endpoints of the split lines, accordingly. Third, we cluster all buses within a radius of \SI{5000}{\meter}. We do this for several reasons, i) to avoid duplicates of buses that represent the same substation in reality, ii) to improve the computational efficiency of the model and iii) to improve the topological connectedness of the obtained network. In an interative procedure, buses within the given radius are assigned the same ID (Figure \ref{fig:build_osm_network}.c). Fourth, we cluster all buses assigned to the same station ID and \acrshort{ac}/\acrshort{dc} type. For each of the clusters, a bus is created. Connected lines are remapped, accordingly (Figure \ref{fig:build_osm_network}.d). Finally, we ensure that all given components are correctly electrically connected, i.e. \acrshort{ac} buses of different voltage levels at the same substation are linked by transformers, \acrshort{dc} buses which represent endpoints of \acrshort{dc} lines are connected to the closest \acrshort{ac} bus through converters (Figure \ref{fig:build_osm_network}.e) of equal nominal rating, respectively.
+First, we add the endpoints of both \acrshort{ac} and \acrshort{dc} lines to the set of buses (Figure \ref{fig:build_osm_network}.a). We hereinafter refer to the buses created from endpoints as \textit{virtual buses}. This step ensures that each line has two corresponding buses to which it is initially connected. Note that this may introduce potential duplicates of buses beyond those already present --- which we will take care of later. 
+Next, we take of long lines that are overpassing (multiple) substations. Here we assume that in reality, the substation is electrically connected to the overpassing line. To achieve this, we split the original line into the subsegments between the intersecting nodes and add a suffix to its original identifier (Figure \ref{fig:build_osm_network}.b), to i) preserve the uniqueness of each line and ii) still allow for tracing back the line on \acrshort{osm} or OpenInfraMap.\autocite{garrettOpenInfrastructureMap2024} We update the endpoints of the split lines, accordingly. 
+Third, we cluster all buses within a radius of \SI{500}{\meter}: From each substation polygon provided by \acrshort{osm} and each virtual bus, a buffer of \SI{500}{\meter} is created (see Figure \ref{fig:example_clustering}). Substations and virtual buses are assigned the same station identifier and clustered, if they overlap. Then we calculate an internal point based on the \textit{\gls{poi}}\cite{garcia-castellanosPolesInaccessibilityCalculation2007} which provides the geographic coordinates of the simplified substation. With this methodology, we can always find a polygon-internal point, even if the shape is non-convex. If the clustered shape contains one or multiple \acrshort{osm} substations, the largest substation determines the \acrshort{poi} of the simplified bus. Connected lines are remapped, accordingly (Figure \ref{fig:build_osm_network}.d). Finally, we ensure that all given components are correctly electrically connected, i.e. \acrshort{ac} buses of different voltage levels at the same substation are linked by transformers, \acrshort{dc} buses which represent endpoints of \acrshort{dc} lines are connected to the closest \acrshort{ac} bus through converters (Figure \ref{fig:build_osm_network}.e) of equal nominal rating, respectively. Figure \ref{fig:example_clustering} shows an example how the clustering algorithm is applied and how lines are connected.
 
-% \begin{itemize}
-%     \item First, we enhance the original substations dataset by including the endpoints of both \acrshort{ac} and \acrshort{dc} lines. This step ensures consistency between the substation and line datasets by guaranteeing that each line has a corresponding substation at its endpoint. However, as shown in Fig. \ref{fig:step_3}, this process can introduce additional duplicate substations beyond those already present, which need to be addressed.
-%     \item Second, as \gls{osm} data are not model-ready, we need to ensure the connectivity of long lines that may pass through multiple substations. When a line path overpasses a substation, the line is divided into two segments thus ensuring the so-called overpassing node is connected to the whole system. In Fig. \ref{fig:step_3}, `line B' is divided into segments `a' and `b' to ensure the connection of the overpassing bus to the whole system.
-%     \item Third, we cluster the buses within a radius of \SI{5000}{\meter} to avoid duplicated substations and improve the computational efficiency of the model. This is done by an iterative procedure that assign a bus ID to each susbtation and its neighbours iteratively. If a neighbour within the radius is already assigned an ID, then its value is set to the current bus; otherwise a new ID is generated. This step is repeated for \acrshort{ac} and \acrshort{dc} substations, hence ensuring different IDs for each type. By doing so, the same ID may be assigned to substations with multiple voltage values.
-%     \item Forth, resulting substations are clustered by ID, voltage level and AC/DC status and for each cluster an electrical bus is created. Fig. \ref{fig:step_3} shows an example of the procedure.
-%     \item Fifth, to properly represent the network, we then add transformers to connect \acrshort{ac} buses with the same ID but different voltage values. On the other hand, for \acrshort{dc} buses we add a AC/DC converter to ensure connection with the closest high-voltage \acrshort{ac} bus.
-%     \item Finally, appropriate data formatting is applied to adapt the naming conventions to the PyPSA standard, hence ensuring the compatibility of the network with the PyPSA model, as described in the following stage.
-% \end{itemize}
 
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.4\textwidth]{figures/fig_example_clustering.png}
+    \caption{Example for clustering of buses. Taken from the interactive map linked on Zenodo. \cite{xiongPrebuiltElectricityNetwork2024} \textit{The darkred shape represents the union of the buffer created by virtual buses and an original \acrshort{osm} substation polygon (yellow). The bright red dot represents the internal point (\acrshort{poi}) of the union, this point sets the geographic coordinates of the obtained bus. Lines and cables are connected to the respective voltage level within the substation, transformers are added to connect buses of different voltage levels. In this example, no \acrshort{dc} bus is connected to the substation, hence no converters are added.}}
+    \label{fig:example_clustering}
+\end{figure}
 The proposed methodology is an enhanced version of the data processing integrated in the PyPSA-Earth model \autocite{parzenPyPSAEarthNewGlobal2023} which has previously demonstrated the potential of using \acrshort{osm} data for global energy system modelling. Our proposed methodology improves the original implementation in efficiency, computational performance and enhancing the representation of the European high-voltage grid (see Technical Validation Section).
 
 \subsection*{Step 4 --- Creating a PyPSA-ready base network}
-In a final step, we create a network ready for modelling within PyPSA and PyPSA-Eur. The benefit of our our dataset is that it is provided in .csv format and easily readable. Hence, it may potentially be used outside our given use case, directly or with small adaptations. 
+\pdfbookmark[2]{Step 4 -Creating a PyPSA-ready base network}{methods-step4}
+In a final step, we create a network ready for modelling within PyPSA and PyPSA-Eur. The benefit of our our dataset is that it is provided in .csv format and easily readable. Further, we include all original and mapped technical parameters of the grid components. Hence, it may potentially be used outside our given use case, directly or with small adaptations. 
 
-Based on the voltage levels, we map each line to a standard line type library provided with PyPSA \autocite{brownPyPSAPythonPower2018,horschPyPSAEurOpenOptimisation2018,oedingElektrischeKraftwerkeUnd2016,thurnerPandapowerOpenSourcePython2018} with the closest voltage (e.g. \SI{400}{\kilo\volt} is mapped to a \SI{380}{\kilo\volt} line type). Using the standard grid model provided by 50Hertz, \autocite{50hertzStaticGridModel2022} we demonstrate in Figure \ref{fig:scatter_reactance_resistance} that this approach is effective for this particular region in the absence of more accurate data. Using the geometry line length and number of circuits, we calculate the electric parameters, such as impedance, reactance and apparent power $S_{nom}^{AC}$ (Eq. \ref{eq:s_nom}), as these are not contained in the original \gls{osm} input data. We apply a factor of 0.7 to approximate the N-1 security margin (Eq. \ref{eq:s_n-1}). \autocite{shokrigazafroudiTopologybasedApproximationsContingency2022,horschPyPSAEurOpenOptimisation2018} Note that this factor can be individually set in the configuration file of PyPSA-Eur. We provide an overview of all resulting \acrshort{ac} lines and cables in Table \ref{tab:s_nom}.
+Based on the voltage levels, we map each line to a standard line type library provided with PyPSA \autocite{brownPyPSAPythonPower2018,horschPyPSAEurOpenOptimisation2018,oedingElektrischeKraftwerkeUnd2016,thurnerPandapowerOpenSourcePython2018} with the closest voltage (e.g. \SI{400}{\kilo\volt} is mapped to a \SI{380}{\kilo\volt} line type). Using the standard grid model provided by 50Hertz, \autocite{50hertzStaticGridModel2022} we demonstrate in Figure \ref{fig:scatter_reactance_resistance} that this approach is effective for this particular region in the absence of more accurate data. Using the geometry line length and number of circuits, we calculate the electric parameters, such as impedance, reactance and apparent power $S_{nom}^{AC}$ (Eq. \ref{eq:s_nom}), as these are not contained in the original \gls{osm} input data. We point out, that while the mapped standard line type of a \SI{380}{\kilo\volt} and a \SI{400}{\kilo\volt} is the same, the calculated apparent power differs given the multiplication with their individual voltage levels, respectively. We apply a factor of 0.7 to approximate the N-1 security margin (Eq. \ref{eq:s_n-1}). \autocite{shokrigazafroudiTopologybasedApproximationsN12022,horschPyPSAEurOpenOptimisation2018} Note that this factor can be individually set in the configuration file of PyPSA-Eur. We provide an overview of all resulting \acrshort{ac} lines and cables in Table \ref{tab:s_nom}.
 
 \begin{align}
     S_{nom}^{AC} &= n_{circuits}\cdot\sqrt{3}\cdot U_{nom}^{OSM} \cdot I_{nom}^
@@ -257,14 +268,84 @@ Based on the voltage levels, we map each line to a standard line type library pr
 
 For \acrshort{dc} links, we use the provided length and nominal rating, directly. We assume that all \acrshort{dc} links can be operated in both directions. Lastly, after transformers and converters have been added to the network, we remove all unconnected or islanded components. 
 
-% \subsubsection*{Third-level section}
-% Topical subheadings are allowed.
-
 \section*{Data Records}
-% \pdfcomment{The Data Records section should be used to explain each data record associated with this work, including the repository where this information is stored, and to provide an overview of the data files and their formats. Each external data record should be cited numerically in the text of this section, for example \autocite{brownSynergiesSectorCoupling2018}, and included in the main reference list as described below. A data citation should also be placed in the subsection of the Methods containing the data-collection or analytical procedure(s) used to derive the corresponding record. Providing a direct link to the dataset may also be helpful to readers (\hyperlink{https://doi.org/10.6084/m9.figshare.853801}{https://doi.org/10.6084/m9.figshare.853801}).
-% Tables should be used to support the data records, and should clearly indicate the samples and subjects (study inputs), their provenance, and the experimental manipulations performed on each (please see 'Tables' below). They should also specify the data output resulting from each data-collection or analytical step, should these form part of the archived record.}
-The compiled representation of the European high-voltage grid (Figure \ref{fig:osm_map}) is hosted online in .csv format and can be downloaded via the Zenodo repository.\autocite{xiongPrebuiltElectricityNetwork2024} The dataset includes the geographical scope of the ENTSO-E member states (without Cyprus, Iceland, Kosovo, and Turkey). 
-We continuously update the dataset as the underlying \gls{osm} input data and the workflow is improved. As of the submission of this paper, the resulting network (Figure \ref{fig:osm_map}) contains 5848 buses, 7320 \acrshort{ac} lines and cables, 36 simplified/aggregated \acrshort{dc} links (and converters at their endpoints, respectively), and 1059 \acrshort{ac} transformers, comprising a total of \SI{261757}{\kilo\meter} in total route length.
+\pdfbookmark[1]{Data Records}{data-records}
+The compiled representation of the European high-voltage grid (Figure \ref{fig:osm_map}) is hosted online in .csv format and can be downloaded via the Zenodo repository.\autocite{xiongPrebuiltElectricityNetwork2024} The dataset includes the geographical scope of the ENTSO-E member states (without Cyprus, Iceland, Kosovo, and Turkey), i.e. Albania (AL), Austria (AT), Belgium (BE), Bosnia and Herzegovina (BA), Bulgaria (BG), Croatia (HR), Czech Republic (CZ), Denmark (DK), Estonia (EE), Finland (FI), France (FR), Germany (DE), Greece (GR), Hungary (HU), Ireland (IE), Italy (IT), Kosovo (XK), Latvia (LV), Lithuania (LT), Luxembourg (LU), Moldova (MD), Montenegro (ME), Netherlands (NL), North Macedonia (MK), Norway (NO), Poland (PL), Portugal (PT), Romania (RO), Serbia (RS), Slovakia (SK), Slovenia (SI), Spain (ES), Sweden (SE), Switzerland (CH), Ukraine (UA), and the United Kingdom (GB).
+
+We continuously update the dataset as the underlying \gls{osm} input data and the workflow is improved. As of the submission of this paper, the resulting network (Figure \ref{fig:osm_map}) contains 5848 buses, 7320 \acrshort{ac} lines and cables, 36 simplified/aggregated \acrshort{dc} links (and converters at their endpoints, respectively), and 1059 \acrshort{ac} transformers, comprising a total of \SI{261757}{\kilo\meter} in total route length. In the following, we describe the structure, parameters, and units of the grid components which stored comma-separated value files of the same name. The description refers to the version that serves as a foundation of this publication (i.e. version 0.6).\autocite{xiongPrebuiltElectricityNetwork2024}
+
+\subsection*{Buses (buses.csv)}
+All \acrshort{ac} and \acrshort{dc} substations are represented as buses and stored in the `buses.csv' file (\SI{0.9}{\mega\byte}). The file contains the following columns and properties:
+\begin{itemize}
+    \item \colorcode{bus\_id} (string): Unique identifier of the bus. The name of a bus is derived in two ways: If a \acrshort{osm} 
+    relation or way was used to create the bus, the prefix starts with `way/' or `relation/', accordingly. As such, the original identifier is preserved. If the bus is a result of endpoints of connected lines or cables (`virtual buses'), without an underlying \acrshort{osm}, the prefix is the two-letter ISO3166-1 alpha-2 country code, numbered from North to South and West to East. The suffix represents the voltage level of the bus.
+    \item \colorcode{voltage} (integer): Nominal voltage level of the bus in \si{\kilo\volt} as extracted from the \acrshort{osm} data or connected lines and cables (in the case of virtual buses).
+    \item \colorcode{dc} (boolean): Boolean flag indicating whether the bus type is \acrshort{dc} (True/t) or \acrshort{ac} (False/f).
+    \item \colorcode{symbol} (string): String that describes the nature of the bus. By design, all buses are substations, hence the symbol is `Substation'.
+    \item \colorcode{under\_construction} (boolean): Boolean flag indicating whether the bus is under construction (True/t) or not (False/f). This is needed to differentiate commissioned substations from planned transmission projects when activating extensions of the PyPSA-Eur model. By design, all buses included in this dataset are commissioned and hence not under construction.
+    \item \colorcode{tags} (string): Additional information on the bus, e.g. the prefix of the bus. This string can be used to access the underlying \acrshort{osm} way or relation, if available.
+    \item \colorcode{x} and \colorcode{y} (float): Geographical coordinates of the bus in the WGS84 (EPSG:4326) coordinate system, calculated using the \acrshort{poi} approach.\autocite{garcia-castellanosPolesInaccessibilityCalculation2007}
+    \item \colorcode{geometry} (shapely Point): Geographical point of the bus in the WGS84 (EPSG:4326) coordinate system. This property provides the `x' and `y' formatted as Point object of the open-source Python library `shapely'.\cite{gilliesShapely2024} It can be imported using \colorcode{shapely.wkt.loads()} function.
+\end{itemize}
+
+\subsection*{AC lines and cables (lines.csv)}
+All \acrshort{ac} lines and cables are stored in the `lines.csv' file. Given the high resolution of the geographic linestrings, its file size is considerably large (\SI{19.7}{\mega\byte}) and makes up the majority of the dataset's content and size. The file contains the following columns and properties:
+\begin{itemize}
+    \item \colorcode{line\_id} (string): Unique identifier of the \acrshort{ac} line/cable. The name is directly derived from the underlying \acrshort{osm} way or relation, preserving the original identifier. The suffix includes the voltage level in \si{\kilo\volt}. Merged lines include a `merged\_' prefix, followed by the \acrshort{osm} identifier of the longest contained line/cable as well as the number of additional lines/cables that were merged.
+    \item \colorcode{bus0} and \colorcode{bus1} (string): Reference to the buses at the start (`bus0') and end (`bus1') of the line/cable, see `buses.csv'.
+    \item \colorcode{voltage} (integer): Nominal voltage level of the line/cable in \si{\kilo\volt} as extracted from the \acrshort{osm} data.
+    \item \colorcode{i\_nom} (float): Nominal current of the line/cable in \si{\kilo\ampere} as mapped using using pandapower's standard line type library.\autocite{thurnerPandapowerOpenSourcePython2018}
+    \item \colorcode{circuits} (integer): Number of parallel circuits of the line/cable, as extracted from the \acrshort{osm} data.
+    \item \colorcode{s\_nom} (float): Nominal apparent power capacity of the line/cable in \si{\mega\volt\ampere} as calculated using Eq. \ref{eq:s_nom} based on pandapower's standard line type library.\autocite{thurnerPandapowerOpenSourcePython2018} Note that this value represents the maximum technical capacity (100 \%) taking into account the number of circuits.
+    \item \colorcode{r} (float): Line resistance in \si{\ohm} as calculated using the length of the line/cable and pandapower's standard line type library.\autocite{thurnerPandapowerOpenSourcePython2018}
+    \item \colorcode{x} (float): Line reactance in \si{\ohm} as calculated using the length of the line/cable and pandapower's standard line type library.\autocite{thurnerPandapowerOpenSourcePython2018}
+    \item \colorcode{b} (float): Line susceptance in \si{\siemens} as calculated using pandapower's standard line type library.\autocite{thurnerPandapowerOpenSourcePython2018}
+    \item \colorcode{length} (float): The length of the line/cable in \si{\meter} as calculated using the linestring of the underlying \acrshort{osm} way or relation, transformed from the WGS84 (EPSG:4326) coordinate system to a metric distance projection, i.e. LAEA Europe (EPSG:3035).
+    \item \colorcode{underground} (boolean): Boolean flag indicating whether the element is underground (True/t) or overhead (False/f), hence an overhead line or a cable. This information is derived from the \acrshort{osm} data.
+    \item \colorcode{under_construction} (boolean): Boolean flag indicating whether the line/cable is under construction (True/t) or not (False/f). This is needed to differentiate commissioned transmission lines from planned transmission projects when activating extensions of the PyPSA-Eur model. By design, all lines included in this dataset are commissioned and hence not under construction.
+    \item \colorcode{type} (string): Type of the line as mapped using pandapower's standard line type library.\autocite{thurnerPandapowerOpenSourcePython2018}. This property is the foundation for calculating `r', `x', `b', and `s\_nom'.
+    \item \colorcode{tags} (string): Additional information on the line/cable, e.g. the contained \acrshort{osm} way or relation. For merged lines/cables, contained elements are separated by semicolons.
+    \item \colorcode{geometry} (shapely LineString): Geographical line of the line/cable in the WGS84 (EPSG:4326) coordinate system. This property contains geographically highly spatially resolved linestring of the \acrshort{osm} way or relation. The endpoints have been cleaned to exactly end in `bus0' and `bus1'. The property is provided as a shapely LineString object.\cite{gilliesShapely2024} It can be imported using \colorcode{shapely.wkt.loads()} function.
+\end{itemize}
+
+\subsection*{DC lines and cables (links.csv)}
+All \acrshort{dc} lines and cables are stored in the `lines.csv' file (\SI{0.4}{\mega\byte}). The file contains the following columns and properties:
+\begin{itemize}
+    \item \colorcode{link\_id} (string): Unique identifier of the \acrshort{dc} line/cable. The name is directly derived from the underlying \acrshort{osm} way or relation, preserving the original identifier. The suffix includes the voltage level in \si{\kilo\volt} and a `DC' identifier.
+    \item \colorcode{bus0} and \colorcode{bus1} (string): Reference to the buses at the start (`bus0') and end (`bus1') of the line/cable, see `buses.csv'.
+    \item \colorcode{voltage} (integer): Nominal voltage level of the line/cable in \si{\kilo\volt} as extracted from the \acrshort{osm} data.
+    \item \colorcode{p\_nom} (float): Nominal real power capacity of the line/cable in \si{\mega\watt} as provided by the \acrshort{osm} relation.
+    
+    \item \colorcode{length} (float): The length of the line/cable in \si{\meter} as calculated using the linestring of the underlying \acrshort{osm} way or relation, transformed from the WGS84 (EPSG:4326) coordinate system to a metric distance projection, i.e. LAEA Europe (EPSG:3035).
+    \item \colorcode{underground} (boolean): Boolean flag indicating whether the element is underground (True/t) or overhead (False/f), hence an overhead line or a cable. This information is derived from the \acrshort{osm} data.
+    \item \colorcode{under_construction} (boolean): Boolean flag indicating whether the line/cable is under construction (True/t) or not (False/f). This is needed to differentiate commissioned transmission lines from planned transmission projects when activating extensions of the PyPSA-Eur model. By design, all lines included in this dataset are commissioned and hence not under construction.
+    \item \colorcode{tags} (string): Additional information on the line/cable, e.g. the contained \acrshort{osm} relation.
+    \item \colorcode{geometry} (shapely LineString): Geographical line of the line/cable in the WGS84 (EPSG:4326) coordinate system. This property contains geographically highly spatially resolved linestring of the \acrshort{osm} way or relation. The endpoints have been cleaned to exactly end in `bus0' and `bus1'. The property is provided as a shapely LineString object.\cite{gilliesShapely2024} It can be imported using \colorcode{shapely.wkt.loads()} function.
+\end{itemize}
+
+\subsection*{Transformers (transformers.csv)}
+All transformers are stored in the `transformers.csv' file (\SI{0.1}{\mega\byte}). The file contains the following columns and properties:
+\begin{itemize}
+    \item \colorcode{transformer\_id} (string): Unique identifier of the transformer. The prefix is determined by the substation where the transformer is located. The suffixes contain the voltage `bus0` and `bus1` in \si{\kilo\volt}.'
+    \item \colorcode{bus0} and \colorcode{bus1} (string): Reference to the buses at the start (`bus0') and end (`bus1') of the line/cable, see `buses.csv'.
+    \item \colorcode{voltage\_bus0} and \colorcode{voltage\_bus0} (integer): Voltage level at the `bus0' and `bus1' side of the transformer in \si{\kilo\volt}, respectively.
+    \item \colorcode{s\_nom} (integer): Rounded (ceiling) apparent power of the transformer in \si{\mega\volt\ampere}. This is determined by the maximum throughput of the transformer, i.e. the maximum of the sum of connected lines/cables on either side.
+    \item \colorcode{geometry} (shapely LineString): Geometry of the transformer, represented by a linestring in (EPSG:4326) coordinate system, connecting two buses of different voltage levels at a substation. It can be imported using \colorcode{shapely.wkt.loads()} function.
+\end{itemize}
+
+\subsection*{Converters (converters.csv)}
+All converters are stored in the `converters.csv' file (\SI{0.01}{\mega\byte}). The file contains the following columns and properties:
+\begin{itemize}
+    \item \colorcode{converter\_id} (string): Unique identifier of the converter. The suffix is determined by the substation where the converter is located. The suffixes contain the voltage `bus0` and `bus1` in \si{\kilo\volt}.'
+    \item \colorcode{bus0} and \colorcode{bus1} (string): Reference to the buses at the start (`bus0') and end (`bus1') of the line/cable, see `buses.csv'.
+    \item \colorcode{voltage}: Maximum voltage level of the converter in \si{\kilo\volt} as extracted from \acrshort{osm} data of the connected \acrshort{dc} lines/cables. 
+    \item \colorcode{p\_nom} (integer): Nominal real power capacity of the converter in \si{\mega\watt}, determined by the sum of real power capacities of the connected \acrshort{dc} lines/cables.
+    \item \colorcode{geometry} (shapely LineString): Geometry of the converter, represented by a linestring in (EPSG:4326) coordinate system, connecting an \acrshort{ac} and \acrshort{dc} bus at a substation. It can be imported using \colorcode{shapely.wkt.loads()} function.
+\end{itemize}
+
+
+\subsection*{Interactive map (map.html)}
+The dataset is accompanied by an interactive map using the open-source packages geopandas\cite{jordahlGeopandasGeopandasV0812020} and folium. The map contains all components of the dataset, i.e. buses, lines, transformers, and converters, their geometries and technical parameters. Using any modern browser to open the map allows for visual exploration of the dataset. Different layers can be individually activated or deactivated --- technical properties can be inspected by hovering or clicking on the components. As the map is self-contained and stores all information of the dataset, it can be used offline and is considerably large at \SI{53.1}{\mega\byte}. We provide a screenshot of the map in Figure \ref{fig:osm_map}.
 
 \begin{figure}[!htbp]
     \centering
@@ -277,10 +358,12 @@ We continuously update the dataset as the underlying \gls{osm} input data and th
 \newpage
 \newpage
 \section*{Technical Validation}
-% \pdfcomment{This section presents any experiments or analyses that are needed to support the technical quality of the dataset. This section may be supported by figures and tables, as needed. This is a required section; authors must present information justifying the reliability of their data.}
+\label{sec:technical-validation}
+\pdfbookmark[1]{Technical Validation}{technical-validation}
 We perform two validation steps for assessing the quality of the dataset. First, we compare the dataset with official inventory statistics provided by \acrshort{entsoe}. Second, we compare the results of an representative PyPSA-Eur model instance based on the two high-voltage grid datasets: OSM (presented in \ref{fig:osm_map}) and an extract from the online ENTSO-E map using GridKit tool (referred to as ‘ENTSO-E map’).\autocite{wiegmansGridKitExtractENTSOE2016} This network is currently being used by numerous PyPSA-Eur users, and is hence a good reference for comparison. In Figure \ref{fig:osm_vs_50Hertz_sgm}, we further provide a comparison between a geo-referenced, official dataset by 50Hertz\autocite{50hertzStaticGridModel2022} and the \acrshort{osm}-based grid of the region, respectively.
 
-\subsection*{Comparison with \acrshort{entsoe} statistics and map}
+\subsection*{Comparison with ENTSO-E statistics and map}
+\pdfbookmark[2]{Comparison with ENTSO-E statistics and map}{technical-validation-entsoe}
 Based on \acrshort{entsoe}'s 2023 inventory of transmission,\autocite{entso-eInventoryTransmission20232024} we first compare the total route (a) and circuit lengths (b) of \acrshort{ac} lines and cables on a per country level (Figure \ref{fig:bar_lengths}.). Note that the inventory does not include all statistics for each country, i.e. route lengths are missing for Bosnia and Herzegovina, Switzerland, and Great Britain, while circuit lengths are missing for Montenegro and North Macedonia. While Ukraine and the Republic of Moldova have joined \acrshort{entsoe} on 1 January 2024 and 22 November 2023 as full and observing members, respectively, their inventory are not yet included in the dataset. For these two countries, we take reference data from third party sources.\autocite{cigrePowerSystemUkraine2018,globaldataTopFiveTransmission2023,moldelectricaTechnicalEconomicIndicators2023}
 
 \begin{figure}[!htbp]
@@ -304,7 +387,8 @@ As another validation step, we compare the total line volume on NUTS1 region lev
 To assess the transmission capacity across regions, we compare the capacity (Figure \ref{fig:scatter_joined}.b) and number of line crossings (Figure \ref{fig:scatter_joined}.c) per NUTS1 border (Figure \ref{fig:scatter_joined}.b). While the two transmission grids strongly correlate, we observe notable differences at individual borders ($\rho_{MVA} = 0.8491$), the same is true for the absolute number of line crossings ($\rho_{crossings} = 0.8573$). Due to different quality in geospatial information contained in both transmission grid representations, buses in one may be offset (or not even exist) in the other. Stronger outliers can primarily be traced back to buses close to NUTS1 borders (Figure \ref{fig:scatter_joined}.b). Notable outliers are located in Spain (light green), in Ukraine (pink), and southwestern parts of Germany (ocher). The reasons for discrepancies can be manifold, e.g. due to differences in exact locations of boundary nodes, missing, outdated or wrong data. In the case of Spain, the main reason for the large discrepancy lies in the representation of the high-voltage grid in and around the Madrid area, where the \acrshort{entsoe} map is stylised for clarity. A comparison with an official map provided by the National Geographic Institute of Spain\autocite{institutogeograficonacionalEnergiaMapaRed2016} confirms the \gls{osm} topology to be more accurate.
 
 \subsection*{Comparison of model results}
-In order to assess the impact of the new transmission grid representation, we compare the results of a representative PyPSA-Eur model run based on the \gls{osm} dataset to a run based on the \acrshort{entsoe} map which is currently being used in PyPSA-Eur. \autocite{horschPyPSAEurOpenOptimisation2018} Note that the results shown in this publication are based on version 0.3 of the released prebuilt high-voltage grid representation on Zenodo.\autocite{xiongPrebuiltElectricityNetwork2024} We use the same model setup and input data in both model runs, except for the grid representation. We focus on the electricity sector, taking techno-economic assumptions projected for the year 2030. We allow for capacity expansion in renewable energy as well as gas-fired generation capacities. To narrow down the effect of the transmission grid, we do not allow for grid expansion and disable dynamic line rating. We set the carbon price to 100 \euro{} per tonne of \ce{CO2} emitted.
+\pdfbookmark[2]{Comparison of model results}{technical-validation-model-results}
+In order to assess the impact of the new transmission grid representation, we compare the results of a representative PyPSA-Eur model run based on the \gls{osm} dataset to a run based on the \acrshort{entsoe} map which is currently being used in PyPSA-Eur. \autocite{horschPyPSAEurOpenOptimisation2018} Note that the results shown in this publication are based on version 0.6 of the released prebuilt high-voltage grid representation on Zenodo (\href{https://doi.org/10.5281/zenodo.14144752}{https://doi.org/10.5281/zenodo.14144752}).\autocite{xiongPrebuiltElectricityNetwork2024} We use the same model setup and input data in both model runs, except for the grid representation. We focus on the electricity sector, taking techno-economic assumptions projected for the year 2030 based on version 0.9.2 of the PyPSA technology dataset. \autocite{lisazeyenPyPSATechnologydataV0922024} We allow for capacity expansion in renewable energy as well as gas-fired generation capacities. To narrow down the effect of the transmission grid, we do not allow for grid expansion and disable dynamic line rating. We set the carbon price to 100 \euro{} per tonne of \ce{CO2} emitted.
 
 \begin{figure}[!htbp]
     \centering
@@ -317,14 +401,12 @@ As the number and exact locations of buses differ, we cluster the networks to ma
 
 Figure \ref{fig:hist_degree_nuts2} compares the weighted degree distribution for the two network topologies. We weight the degree by the number of parallel circuits (Eq. \ref{eq:weighted_degree}) to account for potential different representations of lines and links connecting the same two buses (e.g., single lines with multiple number of circuits or multiple lines with single circuits). If \( G = (V, E) \) is a weighted graph with vertex set \( V \) (buses) and edge set \( E \) (lines, links, converters, and transformers), and each edge \( e \in E \) has a weight \( w(e) \), then the weighted degree of a vertex \( v \in V \) is given by:
 
-% begin math environment
-
 \begin{equation}
     d_w(v) = \sum_{e \in \text{IncidentEdges}(v)} w(e)
     \label{eq:weighted_degree}
 \end{equation}
 
-where \( \text{IncidentEdges}(v) \) is the set of edges incident to \( v \). We find that the two base networks have a similar weighted degree distribution (Pearson correlation coefficient $\rho_{degree,base} = 0.8518$). Notably, the \acrshort{osm}-based transmission grid demonstrates a higher number of buses with degree 2. Clustering the two networks before running the optimisation problem will increase the Pearson correlation coefficient to $\rho_{clustered,base} = 0.8769$ (using unbinned data), $\rho_{clustered,base} = 0.9937$ (using binned data) --- indicating that at NUTS2 resolution, the two networks are very similar in terms of connectivity and adequately represent the real grid.
+where \( \text{IncidentEdges}(v) \) is the set of edges incident to \( v \). We find that the two base networks have a similar weighted degree distribution (Pearson correlation coefficient $\rho_{degree,base} = 0.8518$). Notably, the \acrshort{osm}-based transmission grid demonstrates a higher number of buses with degree 2. Clustering the two networks before running the optimisation problem will increase the Pearson correlation coefficient to $\rho_{clustered,base} = 0.8769$ (using unbinned data), $\rho_{clustered,base} = 0.9937$ (using binned data) --- indicating that at NUTS2 resolution, the two networks are very similar in terms of connectivity.
 
 \begin{figure}[!htbp]
     \centering
@@ -376,10 +458,7 @@ We have shown that the dataset is in good agreement with official statistics and
 \newpage
 
 \section*{Usage Notes}
-% The Usage Notes should contain brief instructions to assist other researchers with reuse of the data. This may include discussion of software packages that are suitable for analysing the assay data files, suggested downstream processing steps (e.g. normalization, etc.), or tips for integrating or comparing the data records with other datasets. Authors are encouraged to provide code, programs or data-processing workflows if they may help others understand or use the data. Please see our code availability policy for advice on supplying custom code alongside Data Descriptor manuscripts.
-
-% For studies involving privacy or safety controls on public access to the data, this section should describe in detail these controls, including how authors can apply to access the data, what criteria will be used to determine who may access the data, and any limitations on data use. 
-
+\pdfbookmark[1]{Usage Notes}{usage-notes}
 The published dataset is provided under the \gls{odbl} 1.0 licence. Geoinformation is encoded in the WGS84 (EPSG:4326) coordinate system. Although the dataset and workflow are provided as part of PyPSA-Eur, they are also suitable for a wide range of other applications, including network analyses, power flow calculations, as well as an input for other energy energy system models and frameworks. Note that further validation and testing is needed for purposes outside the original scope of this work. 
 
 \begin{itemize}
@@ -392,49 +471,39 @@ To abide to the fair use policy of the \acrshort{osm} Overpass turbo \acrshort{a
 
 
 \section*{Code availability}
-% For all studies using custom code in the generation or processing of datasets, a statement must be included under the heading "Code availability", indicating whether and how the code can be accessed, including any restrictions to access. This section should also include information on the versions of any software used, if relevant, and any specific variables or parameters used to generate, test, or process the current dataset. 
-
+\pdfbookmark[1]{Code availability}{code-availability}
 The code to replicate the entire workflow and dataset is provided as part of PyPSA-Eur and released as free software under the MIT licence. Different licences and terms of use may apply to the underlying input data.
 \begin{itemize}
     \item PyPSA-Eur \autocite{horschPyPSAEurOpenOptimisation2018} on GitHub: \\ \href{https://github.com/pypsa/pypsa-eur}{https://github.com/pypsa/pypsa-eur}
-    \item Version 0.3 of the prebuilt network\autocite{xiongPrebuiltElectricityNetwork2024} based on \acrshort{osm} data can be retrieved via the Zenodo repository. This link will also point to future updates: \\ \href{https://zenodo.org/records/13358976}{https://zenodo.org/records/13358976}
+    \item Version 0.6 of the prebuilt network\autocite{xiongPrebuiltElectricityNetwork2024} based on \acrshort{osm} data can be retrieved via the Zenodo repository. This link will also point to future updates: \\ \href{https://doi.org/10.5281/zenodo.14144752}{https://doi.org/10.5281/zenodo.14144752}
+    \item An interactive map is bundled with the dataset on Zenodo. It can also be directly accessed via the PyPSA-Eur documentation under: \\
+    \href{https://google.com}{INSERT LINK WHEN READY}
 \end{itemize}
 
+\phantomsection
 \bibliography{osm-for-pypsa-eur}
 
-% \noindent LaTeX formats citations and references automatically using the bibliography records in your .bib file, which you can edit via the project menu. Use the cite command for an inline citation, e.g. \cite{Kaufman2020, Figueredo:2009dg, Babichev2002, behringer2014manipulating}. For data citations of datasets uploaded to e.g. \emph{figshare}, please use the \verb|howpublished| option in the bib entry to specify the platform and the link, as in the \verb|Hao:gidmaps:2014| example in the sample bibliography file. For journal articles, DOIs should be included for works in press that do not yet have volume or page numbers. For other journal articles, DOIs should be included uniformly for all articles or not at all. We recommend that you encode all DOIs in your bibtex database as full URLs, e.g. https://doi.org/10.1007/s12110-009-9068-2.
-
 \section*{Acknowledgements} % (not compulsory)
-% Acknowledgements should be brief, and should not include thanks to anonymous referees and editors, or effusive comments. Grant or contribution numbers may be acknowledged.
+\pdfbookmark[1]{Acknowledgements}{acknowledgements}
 The authors would like to thank the \gls{osm} community for their tremendous motivation and efforts in providing the data underlying this work. Further, the authors would like to thank the PyPSA-Earth community for setting the groundwork and initiating the move to grid data based on \gls{osm}. Last but not least, the authors would like thank Ekaterina Fedotova and Emmanuel Bolarinwa for early substantial developments and validations in integrating \acrshort{osm} into PyPSA-Earth and Philipp Glaum for technical sparring and support. Map data copyrighted OpenStreetMap contributors and available from \href{https://www.openstreetmap.org}{https://www.openstreetmap.org}. 
 
 This work was supported by the German Federal Ministry for Economic Affairs and Climate Action (BMWK) under Grant No. 03EI4083A (RESILIENT) and Italian Ministry of University and Research (MUR) CUP I53C23002650007 (RESILIENT). This project has been funded by partners of the CETPartnership (https://cetpartnership.eu/) through the Joint Call 2022. As such, this project has received funding from the European Union's Horizon Europe research and innovation programme under grant agreement no. 101069750.
 
 \section*{Author contributions statement}
+\pdfbookmark[1]{Author contributions statement}{author-contributions-statement}
 B.X. -- Conceptualisation, Data curation, Methodology, Software/Programming, Model building and validation, Visualisation, Writing -- original draft, review and editing. 
 D.F. -- Conceptualisation, Software/Programming, Writing -- review and editing.
 F.N. -- Conceptualisation, Discussion, Writing -- review and editing.
 I.R. -- Discussion, Writing -- review and editing.
 T.B. -- Supervision, Writing -- review and editing.
 
-% B.X., F.N. and T.B. conceptualised the project. B.X. and D.F. wrote wrote key data processing scripts. B.X. conducted data collection, model building, data processing and model validation work. All authors discussed the results, contributed to writing the manuscript, and commented on the manuscript at all stages in the review process.
-% A.A. conceived the experiment(s), A.A. and B.A. conducted the experiment(s), C.A. and D.A. analysed the results. All authors reviewed the manuscript. 
-
 \section*{Competing interests} % (mandatory statement)
-% \pdfcomment{The corresponding author is responsible for providing a competing interests statement on behalf of all authors of the paper. This statement must be included in the submitted article file.}
+\pdfbookmark[1]{Competing interests}{competing-interests}
 The authors declare no competing interests.
 
 \newpage
 \section*{Figures \& Tables}
-
-% \pdfcomment{Figures, tables, and their legends, should be included at the end of the document. Figures and tables can be referenced in \LaTeX{} using the ref command, e.g. Figure \ref{fig:stream} and Table \ref{tab:example}. 
-
-% Authors are encouraged to provide one or more tables that provide basic information on the main ‘inputs’ to the study (e.g. samples, participants, or information sources) and the main data outputs of the study. Tables in the manuscript should generally not be used to present primary data (i.e. measurements). Tables containing primary data should be submitted to an appropriate data repository.
-
-% Tables may be provided within the \LaTeX{} document or as separate files (tab-delimited text or Excel files). Legends, where needed, should be included here. Generally, a Data Descriptor should have fewer than ten Tables, but more may be allowed when needed. Tables may be of any size, but only Tables which fit onto a single printed page will be included in the PDF version of the article (up to a maximum of three). 
-
-% Due to typesetting constraints, tables that do not fit onto a single A4 page cannot be included in the PDF version of the article and will be made available in the online version only. Any such tables must be labelled in the text as ‘Online-only’ tables and numbered separately from the main table list e.g. ‘Table 1, Table 2, Online-only Table 1’ etc.}
-
+\pdfbookmark[1]{Figures \& Tables}{figures-and-tables}
 
 \begin{table}[!htbp]
     \centering
@@ -442,7 +511,7 @@ The authors declare no competing interests.
     \hline
     \textbf{Grid element} & \textbf{Overpass turbo query}  \\
     \hline
-    \acrshort{ac} power lines and cables & \colorcode{way[`power'=`line']} and \colorcode{way[`power'=`cable']} \\
+    \acrshort{ac} power lines and cables & \colorcode{way[`power'=`line']}, \colorcode{way[`power'=`cable']} \newline and \colorcode{relation["route"="power"][`frequency'!=`0']} \\
     \hline
     \acrshort{dc} links & \colorcode{relation[`route'=`power'][`frequency'=`0']} \\
     \hline
@@ -476,7 +545,7 @@ The authors declare no competing interests.
     \hline
     SciGrid (Power) \autocite{medjroubiOpenDataPower2017} & Europe, Germany & \acrshort{osm} using GridKit\autocite{wiegmansGridKitExtractENTSOE2016} & November 2015 \newline (updated once) & Yes & Yes (reproduction complex)\\
     \hline
-    \bfseries This publication & Europe & \acrshort{osm} using Overpass turbo \acrshort{api} and Python & August 2024 \newline (updated frequently) &  Yes & Yes \autocite{xiongPrebuiltElectricityNetwork2024} (reproducible)\\
+    \bfseries This publication & Europe & \acrshort{osm} using Overpass turbo \acrshort{api} and Python & November 2024 \newline (updated frequently) &  Yes & Yes \autocite{xiongPrebuiltElectricityNetwork2024} (reproducible)\\
     \hline
     \end{tabular}
     \caption{Notable projects and datasets modelling the high-voltage grid in Europe (alphabetical order). \textit{Note that the specific regional scope referring to `Europe' may vary across the listed projects. A comparison of our dataset with the 50Hertz static grid model is shown in Figure \ref{fig:osm_vs_50Hertz_sgm}.}}
@@ -499,7 +568,7 @@ The authors declare no competing interests.
         \\\hline,
         late after line=\\\hline,
         head to column names
-    ]{datatables/dc_links.csv}{}%
+    ]{datatables/tab_dc_links.csv}{}%
     {\csvcoli & \csvcolii & \csvcoliii & \csvcoliv & \csvcolv & \csvcolvi & \csvcolvii}
 
     \caption{List of \acrshort{dc} projects in the \acrshort{osm}-based transmission grid. \textit{Note that \acrshort{osm} relation identifiers are unique and persistent as long as the object is not deleted. Projects can be directly accessed via the \acrshort{osm} website by clicking on their respective relation identifier in the table.}}
@@ -508,7 +577,6 @@ The authors declare no competing interests.
 
 
 \newpage
-% S_nom after mapped to pandapower standard type library
 \begin{table}[!htbp]
     \centering 
     \csvreader[
@@ -561,7 +629,12 @@ The authors declare no competing interests.
 
 Figure \ref{fig:scatter_reactance_resistance} was generated by mapping \acrshort{ac} lines and cables of the \acrshort{osm}-based transmission grid to the 50Hertz static grid model (SGM) using \acrshort{osm} tags and SGM names (right join). Note that this data explains \SI{4475}{\kilo\meter} of \SI{5126}{\kilo\meter} in route length, as not all lines could mapped. For \SI{79}{\percent} of the data, using pandapower's standard line types\autocite{thurnerPandapowerOpenSourcePython2018} for calculating the resistance and reactance comes close to official data in the SGM (orange). Purple data points a discrepance primarily due to unequal number of parallel circuits in both datasets (SGM data larger by factor 2). Red and blue data points indicate that underlying line types are entirely different. This is the case for some lines where SGM e.g. has a newer \SI{380}{\kilo\volt} (allowing higher higher currents) or weaker \SI{220}{\kilo\volt} line type.
 
-
-
+\newpage
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=\textwidth]{figures/fig_interactive_map_screenshot.png}
+    \caption{Screenshot of the interactive map visualising the \acrshort{osm}-based transmission grid. The map is included in the dataset released on Zenodo (map.html).\autocite{xiongPrebuiltElectricityNetwork2024}}
+    \label{fig:interactive_map_screenshot}
+\end{figure}
 
 \end{document}

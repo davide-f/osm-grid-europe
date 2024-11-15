@@ -5,7 +5,38 @@
 \expandafter\ifx\csname href\endcsname\relax
   \def\href#1#2{#2} \def\path#1{#1}\fi
 
-\bibitem{test}
-me, who, what 99~(1) (2000).
+\bibitem{xiongPrebuiltElectricityNetwork2024}
+B.~Xiong, F.~Neumann, T.~Brown, Prebuilt {{Electricity Network}} for {{PyPSA-Eur}} based on {{OpenStreetMap Data}}. {{Version}} 0.6 (Nov. 2024).
+\newblock \href {https://doi.org/10.5281/zenodo.14144752} {\path{doi:10.5281/zenodo.14144752}}.
+
+\bibitem{hilpertOpenEnergyModelling2018}
+S.~Hilpert, C.~Kaldemeyer, U.~Krien, S.~G{\"u}nther, C.~Wingenbach, G.~Plessmann, The {{Open Energy Modelling Framework}} (oemof) - {{A}} new approach to facilitate open science in energy system modelling, Energy Strategy Reviews 22 (2018) 16--25.
+\newblock \href {https://doi.org/10.1016/j.esr.2018.07.001} {\path{doi:10.1016/j.esr.2018.07.001}}.
+
+\bibitem{garcia-castellanosPolesInaccessibilityCalculation2007}
+D.~{Garcia-Castellanos}, U.~Lombardo, Poles of inaccessibility: {{A}} calculation algorithm for the remotest places on earth, Scottish Geographical Journal 123~(3) (2007) 227--233.
+\newblock \href {https://doi.org/10.1080/14702540801897809} {\path{doi:10.1080/14702540801897809}}.
+
+\bibitem{jaoStaticGridModel2023}
+JAO, Static {{Grid Model}}, https://www.jao.eu/static-grid-model (Sep. 2023).
+
+\bibitem{lisazeyenPyPSATechnologydataV0922024}
+{lisazeyen}, {euronion}, F.~Neumann, M.~Millinger, M.~Parzen, {aalamia}, L.~Franken, T.~Brown, J.~Geis, P.~Glaum, {martavp}, {cpschau}, K.~van Greevenbroek, L.~Trippe, {fhg-isi}, {lukasnacken}, {s8au}, T.~Seibold, {{PyPSA}}/technology-data: V0.9.2 (Aug. 2024).
+\newblock \href {https://doi.org/10.5281/zenodo.13617294} {\path{doi:10.5281/zenodo.13617294}}.
+
+\bibitem{akhmatovNovelHarmonicDistortion2023}
+V.~Akhmatov, B.~S{\o}ndergaard~Bukh, C.~Liberty~Skovgaard, B.~C. Gellert, Novel {{Harmonic Distortion Prediction Methods}} for {{Meshed Transmission Grids}} with {{Large Amount}} of {{Underground Cables}}, Energies 16~(9) (2023) 3965.
+\newblock \href {https://doi.org/10.3390/en16093965} {\path{doi:10.3390/en16093965}}.
+
+\bibitem{bnetzaBestaetigungNetzentwicklungsplanStrom2024}
+BNetzA, {Best{\"a}tigung des Netzentwicklungsplan Strom - NEP 2037/2045 (2023)}, Tech. rep., Bundesnetzagentur (Mar. 2024).
+
+\bibitem{thurnerPandapowerOpenSourcePython2018}
+L.~Thurner, A.~Scheidler, F.~Sch{\"a}fer, J.-H. Menke, J.~Dollichon, F.~Meier, S.~Meinecke, M.~Braun, Pandapower---{{An Open-Source Python Tool}} for {{Convenient Modeling}}, {{Analysis}}, and {{Optimization}} of {{Electric Power Systems}}, IEEE Transactions on Power Systems 33~(6) (2018) 6510--6521.
+\newblock \href {https://doi.org/10.1109/TPWRS.2018.2829021} {\path{doi:10.1109/TPWRS.2018.2829021}}.
+
+\bibitem{brownPyPSAPythonPower2018}
+T.~Brown, J.~H{\"o}rsch, D.~Schlachtberger, {{PyPSA}}: {{Python}} for {{Power System Analysis}}, Journal of Open Research Software 6~(1) (Jan. 2018).
+\newblock \href {https://doi.org/10.5334/jors.188} {\path{doi:10.5334/jors.188}}.
 
 \end{thebibliography}

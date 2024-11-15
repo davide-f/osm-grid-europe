@@ -11,3 +11,4 @@ workflow/submodules/pypsa-eur/Snakefile
 workflow/submodules/pypsa-eur/scripts
 workflow/submodules/pypsa-eur/rules
 workflow/submodules/pypsa-eur/config
+resources/

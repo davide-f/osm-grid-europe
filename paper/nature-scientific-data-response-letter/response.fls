@@ -230,6 +230,7 @@ OUTPUT response.pdf
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/libertine/LinLibertineT-tlf-t1.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/libertine/LinLibertineTB-tlf-t1.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/libertine/LinLibertineT-tlf-t1.tfm
+INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/libertine/LinLibertineT-tlf-t1.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/libertine/LinLibertineTI-tlf-t1.tfm
 INPUT /usr/share/texlive/texmf-dist/tex/latex/libertine/T1LinuxBiolinumT-TLF.fd
 INPUT /usr/share/texlive/texmf-dist/tex/latex/libertine/T1LinuxBiolinumT-TLF.fd
@@ -283,7 +284,10 @@ INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/libertinust1math/libertinus
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/libertinust1math/libertinust1-mathit-bold.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/libertine/LinLibertineT-tlf-t1.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/libertine/LinLibertineTB-tlf-t1.tfm
-INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/libertine/LinLibertineTB-tlf-t1.tfm
+INPUT /usr/share/texlive/texmf-dist/tex/latex/libertine/TS1LinuxLibertineT-TLF.fd
+INPUT /usr/share/texlive/texmf-dist/tex/latex/libertine/TS1LinuxLibertineT-TLF.fd
+INPUT /usr/share/texlive/texmf-dist/tex/latex/libertine/TS1LinuxLibertineT-TLF.fd
+INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/libertine/LinLibertineT-tlf-ts1.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/vf/public/libertine/LinLibertineTB-tlf-t1.vf
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/libertine/LinLibertineTB-tlf-t1--base.tfm
 INPUT /var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map
@@ -291,6 +295,8 @@ INPUT /usr/share/texlive/texmf-dist/fonts/enc/dvips/libertine/lbtn_nh77jq.enc
 INPUT /usr/share/texlive/texmf-dist/fonts/vf/public/libertine/LinLibertineT-tlf-t1.vf
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/libertine/LinLibertineT-tlf-t1--base.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/enc/dvips/libertine/lbtn_76gpa5.enc
+INPUT /usr/share/texlive/texmf-dist/fonts/vf/public/libertine/LinLibertineT-tlf-t1.vf
+INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/libertine/LinLibertineT-tlf-t1--base.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/vf/public/libertine/LinLibertineT-tlf-t1.vf
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/libertine/LinLibertineT-tlf-t1--base.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/vf/public/libertine/LinLibertineTI-tlf-t1.vf
@@ -303,8 +309,17 @@ INPUT /usr/share/texlive/texmf-dist/fonts/vf/public/libertine/LinBiolinumT-tlf-t
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/libertine/LinBiolinumT-tlf-t1--base.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/vf/public/libertine/LinLibertineTB-tlf-t1.vf
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/libertine/LinLibertineTB-tlf-t1--base.tfm
+INPUT /usr/share/texlive/texmf-dist/fonts/vf/public/libertine/LinLibertineT-tlf-ts1.vf
+INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/libertine/LinLibertineT-tlf-ts1--base.tfm
+INPUT /usr/share/texlive/texmf-dist/fonts/enc/dvips/libertine/lbtn_naooyc.enc
+INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/libertine/LinLibertineTB-tlf-t1.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/vf/public/libertine/LinLibertineTB-tlf-t1.vf
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/libertine/LinLibertineTB-tlf-t1--base.tfm
+INPUT ./figures/fig_example_clustering.png
+INPUT ./figures/fig_example_clustering.png
+INPUT ./figures/fig_example_clustering.png
+INPUT ./figures/fig_example_clustering.png
+INPUT ./figures/fig_example_clustering.png
 INPUT ./response.bbl
 INPUT ./response.bbl
 INPUT response.bbl
